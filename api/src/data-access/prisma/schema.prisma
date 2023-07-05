@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model User {
+  id  Int @id @default(autoincrement())
+  username  String  @unique
+  hashedPassword  String
+  genreClassificationTasks GenreClassificationTask[]
+}
+
+model Session {
+  id  String  @id
+  sid  String  @unique
+  data  String
+  expiresAt  DateTime
+}
+
+model GenreClassificationTask {
+  id  Int  @id  @default(autoincrement())
+  userId Int 
+  createdAt  DateTime  @default(now())
+  completedAt  DateTime?
+  status  GenreClassificationTaskStatuses
+  result String?
+  fileName String
+  audioUploadFilePath String
+  user  User  @relation(fields: [userId], references: [id])
+}
+
+enum GenreClassificationTaskStatuses {
+  UPLOADING_AUDIO
+  LOADING_MODEL
+  EXTRACTING_FEATURE
+  PREDICTING_GENRE
+  COMPLETE
+}
